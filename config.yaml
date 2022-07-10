@@ -1,0 +1,16 @@
+CFG:
+  DEBUG: false
+  num_shadow_models: 512
+  shadow_train_size: 25000
+  target_train_size: 8000
+  seed: 42
+  num_classes: 10
+  learning_rate: 0.0005 # Efficientnet Learning rate
+  weight_decay: 0.00005 # default weight decay ratio is 0.1(https://github.com/clovaai/AdamP), but using 0.01 for small dataset
+  image_resolution: 224
+  input_resolution: 224
+  train_batch_size: 1024
+  val_batch_size: 512
+  num_epochs: 10
+  logging_steps: 1000
+  save_path: "./ckpt"
