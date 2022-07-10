@@ -4,7 +4,6 @@ import torch
 import torchvision
 import torch.nn as nn
 import torch.nn.functional as F
-from torchvision.models import resnet18
 from torch.optim import Adam, AdamW
 import torchvision.transforms as transforms
 from tqdm import tqdm
@@ -13,6 +12,7 @@ import random
 from easydict import EasyDict
 import yaml
 import wandb
+import importlib
 
 # Read config.yaml file
 with open("config.yaml") as infile:
@@ -76,12 +76,15 @@ for _ in range(CFG.num_shadow_models):
     list_train_loader.append(subset_train_loader)
     list_eval_loader.append(subset_eval_loader)
 
+model_architecture = importlib.import_module("torchvision.models")
+model_class = getattr(model_architecture, CFG.model_architecture)
+
 # Train shadow model
 for shadow_number, trainloader in enumerate(tqdm(list_train_loader)):
-    shadow_model = resnet18(pretrained=False)
+    shadow_model = model_class(pretrained=False)
     shadow_model = shadow_model.to(device)
 
-    run_name = f"resnet18_shadow_{shadow_number}"
+    run_name = f"{model_architecture}_shadow_{shadow_number}"
 
     wandb.init(
         entity="cysec",
@@ -113,7 +116,7 @@ for shadow_number, trainloader in enumerate(tqdm(list_train_loader)):
     wandb.finish()
 
 # Train Target Model
-target_model = resnet18(pretrained=False)
+target_model = model_class(pretrained=False)
 target_model = target_model.to(device)
 optimizer = AdamW(target_model.parameters(), lr=CFG.learning_rate, weight_decay=CFG.weight_decay)
 

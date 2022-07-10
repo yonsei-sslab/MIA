@@ -13,4 +13,5 @@ CFG:
   val_batch_size: 512
   num_epochs: 10
   logging_steps: 1000
-  save_path: "./ckpt"
+  save_path: ./ckpt
+  model_architecture: resnet18
