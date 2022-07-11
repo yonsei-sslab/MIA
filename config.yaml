@@ -10,7 +10,7 @@ CFG:
   seed: 42
   num_classes: 10 # CIFAR10 vs CIFAR100 selection
   learning_rate: 0.0005 # Efficientnet Learning rate
-  weight_decay: 0.00005 # default weight decay ratio is 0.1(https://github.com/clovaai/AdamP), but using 0.01 for small dataset
+  weight_decay: 0.00005 # default lr: wd ratio is 0.1(https://github.com/clovaai/AdamP), but using 0.01 for small dataset
   input_resolution: 64
   train_batch_size: 1024
   val_batch_size: 1024

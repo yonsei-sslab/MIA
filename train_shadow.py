@@ -49,13 +49,8 @@ trainloader = torch.utils.data.DataLoader(
     trainset, batch_size=CFG.train_batch_size, shuffle=True, num_workers=2
 )
 
-testset = DSET_CLASS(root="./data", train=False, download=True, transform=transform)
-testloader = torch.utils.data.DataLoader(
-    testset, batch_size=CFG.val_batch_size, shuffle=False, num_workers=2
-)
-
 # define dataset for attack model that shadow models will generate
-print("mapped classes to ids:", testset.class_to_idx)
+print("mapped classes to ids:", trainset.class_to_idx)
 columns_attack_sdet = [f"top_{index}_prob" for index in range(CFG.num_accessible_probs)]
 df_attack_dset = pd.DataFrame({}, columns=columns_attack_sdet + ["is_member"])
 
@@ -152,43 +147,3 @@ for shadow_number, trainloader in enumerate(tqdm(list_train_loader)):
     torch.cuda.empty_cache()
     wandb.finish()
 
-# Train Target Model
-target_model = model_class(pretrained=CFG.bool_pretrained)
-target_model.fc = nn.Linear(in_features=target_model.fc.in_features, out_features=CFG.num_classes)
-target_model = target_model.to(device)
-optimizer = AdamW(target_model.parameters(), lr=CFG.learning_rate, weight_decay=CFG.weight_decay)
-
-target_train_indices = np.random.choice(
-    len(testset), int(len(testset) * CFG.target_train_size), replace=False
-)
-target_eval_indices = np.setdiff1d(np.arange(len(testset)), target_train_indices)
-
-subset_tgt_train = torch.utils.data.Subset(trainset, target_train_indices)
-subset_tgt_eval = torch.utils.data.Subset(trainset, target_eval_indices)
-
-subset_tgt_train_loader = torch.utils.data.DataLoader(
-    subset_tgt_train, batch_size=CFG.train_batch_size, shuffle=True, num_workers=2
-)
-subset_tgt_eval_loader = torch.utils.data.DataLoader(
-    subset_tgt_eval, batch_size=CFG.val_batch_size, shuffle=False, num_workers=2
-)
-
-wandb.init(
-    entity="cysec",
-    project="membership_inference_attack",
-    group=f"{shadow_model.__class__.__name__}_target",
-    name=run_name,
-)
-
-train(
-    CFG,
-    target_model,
-    subset_tgt_train_loader,
-    subset_tgt_eval_loader,
-    optimizer,
-    CFG.save_path,
-    shadow_number=-1,
-    scheduler=None,
-)
-
-wandb.finish()
