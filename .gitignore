@@ -9,3 +9,4 @@ logs
 *.tsv
 *.tfevents
 *.json
+attack/*

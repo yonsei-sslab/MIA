@@ -39,13 +39,16 @@ X_train, X_test, y_train, y_test = train_test_split(
 # fit model: https://github.com/snoop2head/ml_classification_tutorial/blob/main/ML_Classification.ipynb
 # model = xgb.XGBClassifier(n_estimators=CFG_ATTACK.n_estimators, n_jobs=-1, random_state=CFG.seed)
 # model = lgb.LGBMClassifier(n_estimators=CFG_ATTACK.n_estimators, n_jobs=-1, random_state=CFG.seed)
+
+# https://catboost.ai/en/docs/concepts/loss-functions-classification
 model = CatBoostClassifier(
-    iterations=100, depth=2, learning_rate=1, loss_function="Logloss", verbose=True
+    iterations=100, depth=2, learning_rate=0.25, loss_function="Logloss", verbose=True
 )
 
 model.fit(X_train, y_train)
 accuracy = model.score(X_test, y_test)
 print(accuracy)
-save_path = f"./attack/{model.__class__.__name__}_{accuracy}.joblib"
-dump(model, save_path)
+save_path = f"./attack/{model.__class__.__name__}_{accuracy}"
+# dump(model, save_path)
+model.save_model(save_path)
 

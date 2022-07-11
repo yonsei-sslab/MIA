@@ -63,6 +63,10 @@ optimizer = AdamW(target_model.parameters(), lr=CFG.learning_rate, weight_decay=
 
 target_train_indices = np.random.choice(len(testset), CFG.target_train_size, replace=False)
 target_eval_indices = np.setdiff1d(np.arange(len(testset)), target_train_indices)
+# save target_train_indices as dataframe
+pd.DataFrame(target_train_indices, columns=["index"]).to_csv(
+    "./attack/train_indices.csv", index=False
+)
 
 subset_tgt_train = torch.utils.data.Subset(testset, target_train_indices)
 subset_tgt_eval = torch.utils.data.Subset(testset, target_eval_indices)

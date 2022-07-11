@@ -24,4 +24,5 @@ CFG_ATTACK:
   attack_dset_path: ./attack/ResNet_pretrained_False_num_shadow_100.csv
   test_size: 0.2
   n_estimators: 100
-  attack_model_path: ./attack/XGBClassifier.joblib
+  target_model_path: ./ckpt/target_loss_ 2.4_acc5_93.68000030517578.ckpt
+  attack_model_path: ./attack/CatBoostClassifier_0.57078
