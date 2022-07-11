@@ -1,20 +1,19 @@
 # config for shadow
 CFG:
   DEBUG: false
-  num_accessible_probs: 5 # match with accessible classes logits/probability classes number from the target model
-  num_epochs: 1
-  val_acc_goal: 0.92 # goal for the shadow model's accuracy which might work as early stop
-  num_shadow_models: 512
-  shadow_train_size: 25000
-  target_train_size: 8000
+  num_accessible_probs: 10 # match with accessible classes logits/probability classes number from the target model. usually top 5 for APIs
+  num_epochs: 10 # number of shadow model train epochs
+  val_acc_goal: 92 # goal for the shadow model's accuracy which might work as early stop
+  num_shadow_models: 64
+  shadow_train_size: 0.5 # fraction to divide CIFAR train dataset for shadow model training
+  target_train_size: 0.8 # fraction to divide CIFAR test dataset for target model training
   seed: 42
-  num_classes: 10
+  num_classes: 10 # CIFAR10 vs CIFAR100 selection
   learning_rate: 0.0005 # Efficientnet Learning rate
   weight_decay: 0.00005 # default weight decay ratio is 0.1(https://github.com/clovaai/AdamP), but using 0.01 for small dataset
-  image_resolution: 224
-  input_resolution: 224
+  input_resolution: 64
   train_batch_size: 1024
-  val_batch_size: 512
+  val_batch_size: 1024
   logging_steps: 1000
   save_path: ./ckpt
   model_architecture: resnet18

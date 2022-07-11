@@ -194,5 +194,10 @@ def train(
             best_valid_acc = valid_acc5
             wandb.log({"best_valid_top5_acc": best_valid_acc})
 
+        # early stop
+        if best_valid_acc >= CFG.val_acc_goal:
+            print("Early stopping...")
+            break
+
     return model
 

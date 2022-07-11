@@ -1,5 +1,6 @@
 from shadow.trainer import train
 from shadow.make_data import make_member_nonmember
+from utils.seed import seed_everything
 import os
 import torch
 import torchvision
@@ -26,8 +27,7 @@ if not os.path.exists(CFG.save_path):
     os.makedirs(CFG.save_path)
 
 # seed for future replication
-np.random.seed(CFG.seed)
-random.seed(CFG.seed)
+seed_everything(CFG.seed)
 
 # Load the CIFAR dataset
 # CIFAR train is used for shadow model train & evaluation
@@ -38,7 +38,11 @@ elif CFG.num_classes == 100:
     DSET_CLASS = torchvision.datasets.CIFAR100
 
 transform = transforms.Compose(
-    [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+    [
+        transforms.Resize((CFG.input_resolution, CFG.input_resolution)),
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+    ]
 )
 trainset = DSET_CLASS(root="./data", train=True, download=True, transform=transform)
 trainloader = torch.utils.data.DataLoader(
@@ -62,7 +66,9 @@ list_eval_loader = []
 # make random subset for shadow model train & validation
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")  # Define Devices
 for _ in range(CFG.num_shadow_models):
-    train_indices = np.random.choice(len(trainset), CFG.shadow_train_size, replace=False)
+    train_indices = np.random.choice(
+        len(trainset), int(len(trainset) * CFG.shadow_train_size), replace=False
+    )
 
     eval_indices = np.setdiff1d(np.arange(len(trainset)), train_indices)
 
@@ -152,7 +158,9 @@ target_model.fc = nn.Linear(in_features=target_model.fc.in_features, out_feature
 target_model = target_model.to(device)
 optimizer = AdamW(target_model.parameters(), lr=CFG.learning_rate, weight_decay=CFG.weight_decay)
 
-target_train_indices = np.random.choice(len(testset), CFG.shadow_train_size, replace=False)
+target_train_indices = np.random.choice(
+    len(testset), int(len(testset) * CFG.target_train_size), replace=False
+)
 target_eval_indices = np.setdiff1d(np.arange(len(testset)), target_train_indices)
 
 subset_tgt_train = torch.utils.data.Subset(trainset, target_train_indices)
