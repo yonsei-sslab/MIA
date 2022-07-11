@@ -5,3 +5,4 @@ data/*
 logs
 *.ckpt
 *.csv
+*.joblib

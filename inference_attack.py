@@ -21,23 +21,5 @@ with open("config.yaml") as infile:
 # seed for future replication
 seed_everything(CFG.seed)
 
-df_shadow = pd.read_csv(CFG_ATTACK.attack_dset_path)
-df = df_shadow.sample(CFG_ATTACK.train_size)
-
-# train attack model
-y = df["is_member"]
-X = df.drop(["is_member"], axis=1)
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=CFG_ATTACK.test_size, random_state=CFG.seed
-)
-
-
-# fit model: https://github.com/snoop2head/ml_classification_tutorial/blob/main/ML_Classification.ipynb
-model = xgb.XGBClassifier()
-model.fit(X_train, y_train)
-accuracy = model.score(X_test, y_test)
-print(accuracy)
-save_path = f"./attack/{model.__class__.__name__}_{accuracy}.joblib"
-dump(model, save_path)
-
+# load model from the path
+model_loaded = load(CFG_ATTACK.attack_model_path)

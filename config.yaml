@@ -19,3 +19,9 @@ CFG:
   model_architecture: resnet18
   bool_pretrained: false
 # config for attack model
+
+CFG_ATTACK:
+  attack_dset_path: ./attack/ResNet_pretrained_False_num_shadow_64.csv
+  train_size: 100000
+  test_size: 0.1
+  attack_model_path:
