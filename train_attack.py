@@ -22,11 +22,10 @@ with open("config.yaml") as infile:
 seed_everything(CFG.seed)
 
 df_shadow = pd.read_csv(CFG_ATTACK.attack_dset_path)
-df = df_shadow.sample(CFG_ATTACK.train_size)
 
 # train attack model
-y = df["is_member"]
-X = df.drop(["is_member"], axis=1)
+y = df_shadow["is_member"]
+X = df_shadow.drop(["is_member"], axis=1)
 
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=CFG_ATTACK.test_size, random_state=CFG.seed
@@ -34,7 +33,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 
 # fit model: https://github.com/snoop2head/ml_classification_tutorial/blob/main/ML_Classification.ipynb
-model = xgb.XGBClassifier(n_estimators=CFG_ATTACK.n_estimators)
+model = xgb.XGBClassifier(n_estimators=CFG_ATTACK.n_estimators, n_jobs=-1, random_state=CFG.seed)
 model.fit(X_train, y_train)
 accuracy = model.score(X_test, y_test)
 print(accuracy)
