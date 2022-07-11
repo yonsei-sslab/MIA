@@ -1,7 +1,7 @@
 # config for shadow
 CFG:
   DEBUG: false
-  num_accessible_probs: 10 # match with accessible classes logits/probability classes number from the target model. usually top 5 for APIs
+  topk_num_accessible_probs: 10 # topk match with accessible classes logits/probability classes number from the target model. usually top 5 for APIs
   num_epochs: 25 # number of shadow model train epochs
   val_acc_goal: -1 # shadow model's goal accuracy working as early stop. -1 for not using early stop
   num_shadow_models: 100

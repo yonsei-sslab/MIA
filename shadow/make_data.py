@@ -39,7 +39,7 @@ def make_member_nonmember(finetuned_model, trainloader, valloader, criterion, de
             prob = F.softmax(output, dim=1)  # softmax logits
 
             # get top inferred classes probability and append to member_dset
-            top_p, top_class = prob.topk(CFG.num_accessible_probs, dim=1)
+            top_p, top_class = prob.topk(CFG.topk_num_accessible_probs, dim=1)
             top_p = top_p.cpu().detach().numpy()  # detach from cuda
             # loss = criterion(output, labels)
             member_dset.append(top_p)
@@ -53,7 +53,7 @@ def make_member_nonmember(finetuned_model, trainloader, valloader, criterion, de
             prob = F.softmax(output, dim=1)  # softmax logits
 
             # get top inferred classes probability and append to member_dset
-            top_p, top_class = prob.topk(CFG.num_accessible_probs, dim=1)
+            top_p, top_class = prob.topk(CFG.topk_num_accessible_probs, dim=1)
             top_p = top_p.cpu().detach().numpy()  # detach from cuda
 
             # append to non_member_dset

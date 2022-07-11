@@ -51,7 +51,7 @@ trainloader = torch.utils.data.DataLoader(
 
 # define dataset for attack model that shadow models will generate
 print("mapped classes to ids:", trainset.class_to_idx)
-columns_attack_sdet = [f"top_{index}_prob" for index in range(CFG.num_accessible_probs)]
+columns_attack_sdet = [f"top_{index}_prob" for index in range(CFG.topk_num_accessible_probs)]
 df_attack_dset = pd.DataFrame({}, columns=columns_attack_sdet + ["is_member"])
 
 # random subset for shadow model train & validation from the CIFAR trainset
