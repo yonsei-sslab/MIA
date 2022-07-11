@@ -6,3 +6,6 @@ logs
 *.ckpt
 *.csv
 *.joblib
+*.tsv
+*.tfevents
+*.json

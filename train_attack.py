@@ -5,12 +5,16 @@ import yaml
 from easydict import EasyDict
 from joblib import dump, load
 
+# get metric and train, test support
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+
 # get classifier models
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import RidgeClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 import xgboost as xgb
+import lightgbm as lgb
+from catboost import CatBoostClassifier
 
 # Read config.yaml file
 with open("config.yaml") as infile:
@@ -33,7 +37,12 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 
 # fit model: https://github.com/snoop2head/ml_classification_tutorial/blob/main/ML_Classification.ipynb
-model = xgb.XGBClassifier(n_estimators=CFG_ATTACK.n_estimators, n_jobs=-1, random_state=CFG.seed)
+# model = xgb.XGBClassifier(n_estimators=CFG_ATTACK.n_estimators, n_jobs=-1, random_state=CFG.seed)
+# model = lgb.LGBMClassifier(n_estimators=CFG_ATTACK.n_estimators, n_jobs=-1, random_state=CFG.seed)
+model = CatBoostClassifier(
+    iterations=100, depth=2, learning_rate=1, loss_function="Logloss", verbose=True
+)
+
 model.fit(X_train, y_train)
 accuracy = model.score(X_test, y_test)
 print(accuracy)
