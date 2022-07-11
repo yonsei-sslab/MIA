@@ -98,7 +98,7 @@ for shadow_number, trainloader in enumerate(tqdm(list_train_loader)):
     )
     shadow_model = shadow_model.to(device)
 
-    run_name = f"{model_architecture}_shadow_{shadow_number}"
+    run_name = f"{shadow_model.__class__.__name__}_shadow_{shadow_number}"
 
     wandb.init(
         entity="cysec",
