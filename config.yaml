@@ -9,10 +9,10 @@ CFG:
   target_train_size: 0.8 # fraction to divide CIFAR test dataset for target model training
   seed: 42
   num_classes: 10 # CIFAR10 vs CIFAR100 selection
-  learning_rate: 0.0005 # Efficientnet Learning rate
+  learning_rate: 0.005 # Efficientnet Learning rate
   weight_decay: 0.00005 # default lr: wd ratio is 0.1(https://github.com/clovaai/AdamP), but using 0.01 for small dataset
   input_resolution: 32 # 32 x 32 is cifar10 and cifar100 original image resolution
-  train_batch_size: 512
+  train_batch_size: 1024
   val_batch_size: 512
   logging_steps: 1000
   save_path: ./ckpt
