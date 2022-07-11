@@ -8,6 +8,7 @@ import torch.nn.functional as F
 from torch.optim import Adam, AdamW
 import torchvision.transforms as transforms
 from tqdm import tqdm
+import pandas as pd
 import numpy as np
 import random
 from easydict import EasyDict
@@ -49,14 +50,17 @@ testloader = torch.utils.data.DataLoader(
     testset, batch_size=CFG.val_batch_size, shuffle=False, num_workers=2
 )
 
-
-# Define Device
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# define dataset for attack model that shadow models will generate
+print("mapped classes to ids:", testset.class_to_idx)
+columns_attack_sdet = [f"top_{index}_prob" for index in range(CFG.num_accessible_probs)]
+df_attack_dset = pd.DataFrame({}, columns=columns_attack_sdet + ["is_member"])
 
 # random subset for shadow model train & validation from the CIFAR trainset
 list_train_loader = []
 list_eval_loader = []
 
+# make random subset for shadow model train & validation
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")  # Define Devices
 for _ in range(CFG.num_shadow_models):
     train_indices = np.random.choice(len(trainset), CFG.shadow_train_size, replace=False)
 
@@ -77,14 +81,20 @@ for _ in range(CFG.num_shadow_models):
     list_train_loader.append(subset_train_loader)
     list_eval_loader.append(subset_eval_loader)
 
+# Training multiple shadow models
 model_architecture = importlib.import_module("torchvision.models")
 model_class = getattr(model_architecture, CFG.model_architecture)
+criterion = nn.CrossEntropyLoss()
 
-# Train shadow model
-criterion = nn.CrossEntropyLoss()  # normal cross entropy loss
+# iterate through predefined trainloaders and validationloaders
 for shadow_number, trainloader in enumerate(tqdm(list_train_loader)):
     evalloader = list_eval_loader[shadow_number]
+
+    # define shadow model to finetune on the CIFAR train dataset
     shadow_model = model_class(pretrained=CFG.bool_pretrained)
+    shadow_model.fc = nn.Linear(
+        in_features=shadow_model.fc.in_features, out_features=CFG.num_classes
+    )
     shadow_model = shadow_model.to(device)
 
     run_name = f"{model_architecture}_shadow_{shadow_number}"
@@ -100,6 +110,7 @@ for shadow_number, trainloader in enumerate(tqdm(list_train_loader)):
         shadow_model.parameters(), lr=CFG.learning_rate, weight_decay=CFG.weight_decay
     )
 
+    # finetune shadow model (validation metrics are recorded on wandb)
     finetuned_model = train(
         CFG,
         shadow_model,
@@ -113,21 +124,31 @@ for shadow_number, trainloader in enumerate(tqdm(list_train_loader)):
         device=device,
     )
 
+    # create member dataset vs non-member dataset based on finetuned model
     member_dset, non_member_dset = make_member_nonmember(
         finetuned_model, trainloader, evalloader, criterion, device
     )
 
-    # Prevent OOM error
+    df_member = pd.DataFrame(member_dset, columns=columns_attack_sdet)
+    df_member["is_member"] = 1
+    df_non_member = pd.DataFrame(non_member_dset, columns=columns_attack_sdet)
+    df_non_member["is_member"] = 0
+
+    df_attack_dset = pd.concat([df_attack_dset, df_member, df_non_member])
+    df_attack_dset.to_csv(
+        f"./attack/{shadow_model.__class__.__name__}_pretrained_{CFG.bool_pretrained}_num_shadow_{CFG.num_shadow_models}.csv",
+        index=False,
+    )
+
+    # Prevent OOM error by deleting finetuned model and datasets
     shadow_model.cpu()
-    del shadow_model
-    del optimizer
-    del trainloader
-    del evalloader
+    del shadow_model, optimizer, trainloader, evalloader
     torch.cuda.empty_cache()
     wandb.finish()
 
 # Train Target Model
 target_model = model_class(pretrained=CFG.bool_pretrained)
+target_model.fc = nn.Linear(in_features=target_model.fc.in_features, out_features=CFG.num_classes)
 target_model = target_model.to(device)
 optimizer = AdamW(target_model.parameters(), lr=CFG.learning_rate, weight_decay=CFG.weight_decay)
 

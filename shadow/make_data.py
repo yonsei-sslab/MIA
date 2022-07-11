@@ -5,6 +5,15 @@ from tqdm import tqdm
 import time
 import torch
 from torch import nn
+import numpy as np
+import torch.nn.functional as F
+from easydict import EasyDict
+import yaml
+
+# Read config.yaml file
+with open("config.yaml") as infile:
+    SAVED_CFG = yaml.load(infile, Loader=yaml.FullLoader)
+    CFG = EasyDict(SAVED_CFG["CFG"])
 
 
 def make_member_nonmember(finetuned_model, trainloader, valloader, criterion, device):
@@ -27,12 +36,13 @@ def make_member_nonmember(finetuned_model, trainloader, valloader, criterion, de
 
             # compute output
             output = finetuned_model(images)
-            # softmax output
-            output = torch.softmax(output, dim=1)
-            output = output.cpu().detach().numpy()
+            prob = F.softmax(output, dim=1)  # softmax logits
+
+            # get top inferred classes probability and append to member_dset
+            top_p, top_class = prob.topk(CFG.num_accessible_probs, dim=1)
+            top_p = top_p.cpu().detach().numpy()  # detach from cuda
             # loss = criterion(output, labels)
-            # append to member_dset
-            member_dset.append(output)
+            member_dset.append(top_p)
 
         for i, (images, labels) in enumerate(tqdm(valloader)):
             images = images.to(device)
@@ -40,10 +50,18 @@ def make_member_nonmember(finetuned_model, trainloader, valloader, criterion, de
 
             # compute output
             output = finetuned_model(images)
-            output = torch.softmax(output, dim=1)
-            output = output.cpu().detach().numpy()
-            # loss = criterion(output, labels)
-            # append to non_member_dset
-            non_member_dset.append(output)
+            prob = F.softmax(output, dim=1)  # softmax logits
 
-    return member_dset, non_member_dset
+            # get top inferred classes probability and append to member_dset
+            top_p, top_class = prob.topk(CFG.num_accessible_probs, dim=1)
+            top_p = top_p.cpu().detach().numpy()  # detach from cuda
+
+            # append to non_member_dset
+            non_member_dset.append(top_p)
+
+    # change into numpy array type
+    member_dset, non_member_dset = np.array(member_dset), np.array(non_member_dset)
+
+    # return as dataset row x number of accessible probabilities: (ex) 25000 x 5, 25000 x 5
+    return np.concatenate(member_dset, axis=0), np.concatenate(non_member_dset, axis=0)
+

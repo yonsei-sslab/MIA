@@ -1,5 +1,9 @@
+# config for shadow
 CFG:
   DEBUG: false
+  num_accessible_probs: 5 # match with accessible classes logits/probability classes number from the target model
+  num_epochs: 1
+  val_acc_goal: 0.92 # goal for the shadow model's accuracy which might work as early stop
   num_shadow_models: 512
   shadow_train_size: 25000
   target_train_size: 8000
@@ -11,8 +15,8 @@ CFG:
   input_resolution: 224
   train_batch_size: 1024
   val_batch_size: 512
-  num_epochs: 3
   logging_steps: 1000
   save_path: ./ckpt
   model_architecture: resnet18
   bool_pretrained: false
+# config for attack model
