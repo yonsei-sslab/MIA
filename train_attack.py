@@ -34,7 +34,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 
 # fit model: https://github.com/snoop2head/ml_classification_tutorial/blob/main/ML_Classification.ipynb
-model = xgb.XGBClassifier()
+model = xgb.XGBClassifier(n_estimators=CFG_ATTACK.n_estimators)
 model.fit(X_train, y_train)
 accuracy = model.score(X_test, y_test)
 print(accuracy)

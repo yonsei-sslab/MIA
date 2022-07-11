@@ -2,9 +2,9 @@
 CFG:
   DEBUG: false
   num_accessible_probs: 10 # match with accessible classes logits/probability classes number from the target model. usually top 5 for APIs
-  num_epochs: 10 # number of shadow model train epochs
-  val_acc_goal: 92 # goal for the shadow model's accuracy which might work as early stop
-  num_shadow_models: 64
+  num_epochs: 25 # number of shadow model train epochs
+  val_acc_goal: -1 # shadow model's goal accuracy working as early stop. -1 for not using early stop
+  num_shadow_models: 32
   shadow_train_size: 0.5 # fraction to divide CIFAR train dataset for shadow model training
   target_train_size: 0.8 # fraction to divide CIFAR test dataset for target model training
   seed: 42
@@ -24,4 +24,5 @@ CFG_ATTACK:
   attack_dset_path: ./attack/ResNet_pretrained_False_num_shadow_64.csv
   train_size: 100000
   test_size: 0.1
-  attack_model_path:
+  n_estimators: 10000
+  attack_model_path: ./attack/XGBClassifier.joblib
