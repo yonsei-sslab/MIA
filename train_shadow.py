@@ -1,4 +1,5 @@
 from shadow.trainer import train
+from shadow.make_data import make_member_nonmember
 import os
 import torch
 import torchvision
@@ -80,8 +81,10 @@ model_architecture = importlib.import_module("torchvision.models")
 model_class = getattr(model_architecture, CFG.model_architecture)
 
 # Train shadow model
+criterion = nn.CrossEntropyLoss()  # normal cross entropy loss
 for shadow_number, trainloader in enumerate(tqdm(list_train_loader)):
-    shadow_model = model_class(pretrained=False)
+    evalloader = list_eval_loader[shadow_number]
+    shadow_model = model_class(pretrained=CFG.bool_pretrained)
     shadow_model = shadow_model.to(device)
 
     run_name = f"{model_architecture}_shadow_{shadow_number}"
@@ -97,26 +100,34 @@ for shadow_number, trainloader in enumerate(tqdm(list_train_loader)):
         shadow_model.parameters(), lr=CFG.learning_rate, weight_decay=CFG.weight_decay
     )
 
-    train(
+    finetuned_model = train(
         CFG,
         shadow_model,
         trainloader,
-        list_eval_loader[shadow_number],
+        evalloader,
         optimizer,
         CFG.save_path,
         shadow_number,
         scheduler=None,
+        criterion=criterion,
+        device=device,
+    )
+
+    member_dset, non_member_dset = make_member_nonmember(
+        finetuned_model, trainloader, evalloader, criterion, device
     )
 
     # Prevent OOM error
     shadow_model.cpu()
     del shadow_model
     del optimizer
+    del trainloader
+    del evalloader
     torch.cuda.empty_cache()
     wandb.finish()
 
 # Train Target Model
-target_model = model_class(pretrained=False)
+target_model = model_class(pretrained=CFG.bool_pretrained)
 target_model = target_model.to(device)
 optimizer = AdamW(target_model.parameters(), lr=CFG.learning_rate, weight_decay=CFG.weight_decay)
 

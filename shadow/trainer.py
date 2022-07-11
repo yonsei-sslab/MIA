@@ -73,9 +73,9 @@ def train(
     save_path,
     shadow_number,
     scheduler=None,
+    criterion=None,
     device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),
 ):
-    criterion = nn.CrossEntropyLoss()  # normal cross entropy loss
     best_valid_acc = 0
     # best_valid_loss = 10
 
@@ -174,7 +174,7 @@ def train(
                     model.state_dict(),
                     os.path.join(
                         save_path,
-                        f"shadow_{shadow_number}_loss_{valid_loss:4.2}_acc5_{valid_acc5:4.2}.ckpt",
+                        f"shadow_{shadow_number}_loss_{valid_loss:4.2}_acc5_{valid_acc5}.ckpt",
                     ),
                 )
             elif shadow_number < 0:
@@ -188,9 +188,11 @@ def train(
                 torch.save(
                     model.state_dict(),
                     os.path.join(
-                        save_path, f"target_loss_{valid_loss:4.2}_acc5_{valid_acc5:4.2}.ckpt",
+                        save_path, f"target_loss_{valid_loss:4.2}_acc5_{valid_acc5}.ckpt",
                     ),
                 )
             best_valid_acc = valid_acc5
             wandb.log({"best_valid_top5_acc": best_valid_acc})
+
+    return model
 

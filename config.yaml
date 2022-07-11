@@ -11,7 +11,8 @@ CFG:
   input_resolution: 224
   train_batch_size: 1024
   val_batch_size: 512
-  num_epochs: 10
+  num_epochs: 3
   logging_steps: 1000
   save_path: ./ckpt
   model_architecture: resnet18
+  bool_pretrained: false
