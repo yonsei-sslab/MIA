@@ -61,11 +61,9 @@ list_eval_loader = []
 # make random subset for shadow model train & validation
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")  # Define Devices
 for _ in range(CFG.num_shadow_models):
-    train_indices = np.random.choice(
-        len(trainset), int(len(trainset) * CFG.shadow_train_size), replace=False
-    )
-
+    train_indices = np.random.choice(len(trainset), CFG.shadow_train_size, replace=False)
     eval_indices = np.setdiff1d(np.arange(len(trainset)), train_indices)
+    eval_indices = np.random.choice(eval_indices, CFG.shadow_train_size, replace=False)
 
     subset_train = torch.utils.data.Subset(trainset, train_indices)
 

@@ -61,9 +61,7 @@ target_model.fc = nn.Linear(in_features=target_model.fc.in_features, out_feature
 target_model = target_model.to(device)
 optimizer = AdamW(target_model.parameters(), lr=CFG.learning_rate, weight_decay=CFG.weight_decay)
 
-target_train_indices = np.random.choice(
-    len(testset), int(len(testset) * CFG.target_train_size), replace=False
-)
+target_train_indices = np.random.choice(len(testset), CFG.target_train_size, replace=False)
 target_eval_indices = np.setdiff1d(np.arange(len(testset)), target_train_indices)
 
 subset_tgt_train = torch.utils.data.Subset(testset, target_train_indices)
