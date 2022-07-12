@@ -90,16 +90,17 @@ df_non_member["is_member"] = 0
 df_target_inference = pd.concat([df_member, df_non_member])
 
 # load model from the path
-attack_model = CatBoostClassifier()
-attack_model.load_model(CFG_ATTACK.attack_model_path)
+if "cat" in CFG_ATTACK.attack_model_path.lower():
+    attack_model = CatBoostClassifier()
+    attack_model.load_model(CFG_ATTACK.attack_model_path)
+else:
+    attack_model = load(CFG_ATTACK.attack_model_path)
 X_test = df_target_inference[columns_attack_sdet].to_numpy()
 y_true = df_target_inference["is_member"].to_numpy()
 y_pred = attack_model.predict(X_test)
 
 # get accuracy, precision, recall, f1-score
-precision = precision_recall_fscore_support(y_true, y_pred, average="macro")[0]
-recall = precision_recall_fscore_support(y_true, y_pred, average="macro")[1]
-f1_score = precision_recall_fscore_support(y_true, y_pred, average="macro")[2]
+precision, recall, f1_score, _ = precision_recall_fscore_support(y_true, y_pred, average="macro")
 accuracy = accuracy_score(y_true, y_pred)
 print("precision:", precision)
 print("recall:", recall)
