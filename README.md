@@ -4,13 +4,15 @@
 
 ### How to run
 
-1. Customize configs in config.yaml
+1. (Optional) Customize train / inference configurations in config.yaml
 
-2. `python train_shadow.py`: Corresponds to Diagram 1-1 ~ Diagram 2-2 illustrated below.
+2. (Optional) `python train_target.py`: Train the victim model which is the target of the extraction.
 
-3. `python train_attack.py`: Corresponds to Diagram 2-3 ~ Diagram 3 illustrated below.
+3. `python train_shadow.py`: Corresponds to Diagram 1-1 ~ Diagram 2-2 illustrated below.
 
-4. `python inference_attack.py`: Corresponds to Diagram 4 illustrated below.
+4. `python train_attack.py`: Corresponds to Diagram 2-3 ~ Diagram 3 illustrated below.
+
+5. `python inference_attack.py`: Corresponds to Diagram 4 illustrated below.
 
 ### Paper's Methodology in Diagrams
 
@@ -31,5 +33,4 @@
 ![Page9](./assets/README/Page9.jpg)
 
 ![Page10](./assets/README/Page10.jpg)
-
 
