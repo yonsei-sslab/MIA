@@ -4,7 +4,7 @@ CFG:
   topk_num_accessible_probs: 10 # topk match with accessible classes logits/probability classes number from the target model. usually top 5 for APIs
   num_epochs: 25 # number of shadow model train epochs
   val_acc_goal: -1 # shadow model's goal accuracy working as early stop. -1 for not using early stop
-  num_shadow_models: 100
+  num_shadow_models: 128
   shadow_train_size: 2500 # number of datasets to divide CIFAR train dataset for shadow model training
   target_train_size: 7500 # fraction to divide CIFAR test dataset for target model training
   seed: 42
@@ -21,7 +21,7 @@ CFG:
 # config for attack model
 
 CFG_ATTACK:
-  attack_dset_path: ./attack/ResNet_pretrained_False_num_shadow_100.csv
+  attack_dset_path: ./attack/ResNet_pretrained_False_num_shadow_128.csv
   test_size: 0.2
   n_estimators: 100
   target_model_path: ./ckpt/target_loss_ 2.4_acc5_93.68000030517578.ckpt

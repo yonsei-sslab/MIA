@@ -16,11 +16,11 @@ with open("config.yaml") as infile:
     CFG = EasyDict(SAVED_CFG["CFG"])
 
 
-def make_member_nonmember(finetuned_model, trainloader, valloader, criterion, device):
+def make_member_nonmember(finetuned_model, trainloader, testloader, criterion, device):
     """ 
     - finetuned_model: finetuned shadow model
     - trainloader: member
-    - valloader: non-member
+    - testloader: non-member
     - criterion: loss function
     - device: cuda or cpu
     """
@@ -44,7 +44,7 @@ def make_member_nonmember(finetuned_model, trainloader, valloader, criterion, de
             # loss = criterion(output, labels)
             member_dset.append(top_p)
 
-        for i, (images, labels) in enumerate(tqdm(valloader)):
+        for i, (images, labels) in enumerate(tqdm(testloader)):
             images = images.to(device)
             labels = labels.to(device)
 

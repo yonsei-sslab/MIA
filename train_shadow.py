@@ -44,30 +44,35 @@ transform = transforms.Compose(
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
     ]
 )
-trainset = DSET_CLASS(root="./data", train=True, download=True, transform=transform)
-trainloader = torch.utils.data.DataLoader(
-    trainset, batch_size=CFG.train_batch_size, shuffle=True, num_workers=2
+shadow_set = DSET_CLASS(root="./data", train=True, download=True, transform=transform)
+shadow_loader = torch.utils.data.DataLoader(
+    shadow_set, batch_size=CFG.train_batch_size, shuffle=True, num_workers=2
 )
 
 # define dataset for attack model that shadow models will generate
-print("mapped classes to ids:", trainset.class_to_idx)
+print("mapped classes to ids:", shadow_set.class_to_idx)
 columns_attack_sdet = [f"top_{index}_prob" for index in range(CFG.topk_num_accessible_probs)]
 df_attack_dset = pd.DataFrame({}, columns=columns_attack_sdet + ["is_member"])
 
-# random subset for shadow model train & validation from the CIFAR trainset
+# random subset for shadow model train & validation from the CIFAR shadow_set
 list_train_loader = []
 list_eval_loader = []
+list_test_loader = []
 
 # make random subset for shadow model train & validation
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")  # Define Devices
 for _ in range(CFG.num_shadow_models):
-    train_indices = np.random.choice(len(trainset), CFG.shadow_train_size, replace=False)
-    eval_indices = np.setdiff1d(np.arange(len(trainset)), train_indices)
+    train_indices = np.random.choice(len(shadow_set), CFG.shadow_train_size, replace=False)
+    eval_indices = np.setdiff1d(np.arange(len(shadow_set)), train_indices)
     eval_indices = np.random.choice(eval_indices, CFG.shadow_train_size, replace=False)
+    test_indices = np.setdiff1d(
+        np.arange(len(shadow_set)), np.concatenate((train_indices, eval_indices))
+    )
+    test_indices = np.random.choice(test_indices, CFG.shadow_train_size, replace=False)
 
-    subset_train = torch.utils.data.Subset(trainset, train_indices)
-
-    subset_eval = torch.utils.data.Subset(trainset, eval_indices)
+    subset_train = torch.utils.data.Subset(shadow_set, train_indices)
+    subset_eval = torch.utils.data.Subset(shadow_set, eval_indices)
+    subset_test = torch.utils.data.Subset(shadow_set, test_indices)
 
     subset_train_loader = torch.utils.data.DataLoader(
         subset_train, batch_size=CFG.train_batch_size, shuffle=True, num_workers=2
@@ -77,17 +82,24 @@ for _ in range(CFG.num_shadow_models):
         subset_eval, batch_size=CFG.val_batch_size, shuffle=False, num_workers=2
     )
 
+    subset_test_loader = torch.utils.data.DataLoader(
+        subset_test, batch_size=CFG.val_batch_size, shuffle=False, num_workers=2
+    )
+
     list_train_loader.append(subset_train_loader)
     list_eval_loader.append(subset_eval_loader)
+    list_test_loader.append(subset_test_loader)
+
 
 # Training multiple shadow models
 model_architecture = importlib.import_module("torchvision.models")
 model_class = getattr(model_architecture, CFG.model_architecture)
 criterion = nn.CrossEntropyLoss()
 
-# iterate through predefined trainloaders and validationloaders
-for shadow_number, trainloader in enumerate(tqdm(list_train_loader)):
+# iterate through predefined shadow_loaders and validationloaders
+for shadow_number, shadow_loader in enumerate(tqdm(list_train_loader)):
     evalloader = list_eval_loader[shadow_number]
+    testloader = list_test_loader[shadow_number]
 
     # define shadow model to finetune on the CIFAR train dataset
     shadow_model = model_class(pretrained=CFG.bool_pretrained)
@@ -113,7 +125,7 @@ for shadow_number, trainloader in enumerate(tqdm(list_train_loader)):
     finetuned_model = train(
         CFG,
         shadow_model,
-        trainloader,
+        shadow_loader,
         evalloader,
         optimizer,
         CFG.save_path,
@@ -125,7 +137,7 @@ for shadow_number, trainloader in enumerate(tqdm(list_train_loader)):
 
     # create member dataset vs non-member dataset based on finetuned model
     member_dset, non_member_dset = make_member_nonmember(
-        finetuned_model, trainloader, evalloader, criterion, device
+        finetuned_model, shadow_loader, testloader, criterion, device
     )
 
     df_member = pd.DataFrame(member_dset, columns=columns_attack_sdet)
@@ -141,7 +153,7 @@ for shadow_number, trainloader in enumerate(tqdm(list_train_loader)):
 
     # Prevent OOM error by deleting finetuned model and datasets
     shadow_model.cpu()
-    del shadow_model, optimizer, trainloader, evalloader
+    del shadow_model, optimizer, shadow_loader, evalloader, testloader
     torch.cuda.empty_cache()
     wandb.finish()
 
