@@ -19,10 +19,10 @@
 - Replicated the paper's configuration on [config.yaml](./config.yaml)
 - Yielded the result of the following
 
-|          | Accuracy | Precision | Recall | F1 Score |
-| :------: | :------: | :-------: | ------ | -------- |
-| CIFAR10  |  0.8376  |  0.8087   | 0.8834 | 0.8444   |
-| CIFAR100 |          |           |        |          |
+| MIA Attack Metrics | Accuracy | Precision | Recall | F1 Score |
+| :----------------: | :------: | :-------: | :----: | :------: |
+|      CIFAR10       |  0.8376  |  0.8087   | 0.8834 |  0.8444  |
+|      CIFAR100      |  0.9746  |  0.9627   | 0.9875 |  0.9749  |
 
 ### Paper's Methodology in Diagrams
 
