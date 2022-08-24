@@ -14,6 +14,16 @@
 
 5. `python inference_attack.py`: Corresponds to Diagram 4 illustrated below.
 
+### Result
+
+- Replicated the paper's configuration on [config.yaml](./config.yaml)
+- Yielded the result of the following
+
+|          | Accuracy | Precision | Recall | F1 Score |
+| :------: | :------: | :-------: | ------ | -------- |
+| CIFAR10  |  0.8376  |  0.8087   | 0.8834 | 0.8444   |
+| CIFAR100 |          |           |        |          |
+
 ### Paper's Methodology in Diagrams
 
 ![Page2](./assets/README/Page2.jpg)
@@ -33,4 +43,3 @@
 ![Page9](./assets/README/Page9.jpg)
 
 ![Page10](./assets/README/Page10.jpg)
-

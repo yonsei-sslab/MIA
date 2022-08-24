@@ -26,6 +26,9 @@ with open("config.yaml") as infile:
 seed_everything(CFG.seed)
 
 df_shadow = pd.read_csv(CFG_ATTACK.attack_dset_path)
+print("Reading attack dataset:", CFG_ATTACK.attack_dset_path)
+print(df_shadow.head)
+print("data shape:", df_shadow.shape)
 
 # train attack model
 y = df_shadow["is_member"]
