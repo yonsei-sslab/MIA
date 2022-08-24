@@ -77,7 +77,7 @@ def train(
     device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),
 ):
     best_valid_acc = 0
-    # best_valid_loss = 10
+    best_valid_loss = 10
 
     for epoch in range(CFG.num_epochs):
         # Train Code Reference: https://github.com/pytorch/examples/blob/00ea159a99f5cb3f3301a9bf0baa1a5089c7e217/imagenet/main.py#L266-L310
@@ -192,6 +192,7 @@ def train(
                     ),
                 )
             best_valid_acc = valid_acc5
+            best_valid_loss = valid_loss
             wandb.log({"best_valid_top5_acc": best_valid_acc})
 
         # early stop
@@ -202,5 +203,17 @@ def train(
         else:
             pass
 
+    # load best model
+    print("Loading best model...")
+    print(f"Best valid loss: {best_valid_loss:4.2}")
+    print(f"Best valid top5 accuracy: {best_valid_acc:4.2}")
+    model.load_state_dict(
+        torch.load(
+            os.path.join(
+                save_path,
+                f"shadow_{shadow_number}_loss_{best_valid_loss:4.2}_acc5_{best_valid_acc}.ckpt",
+            )
+        )
+    )
     return model
 

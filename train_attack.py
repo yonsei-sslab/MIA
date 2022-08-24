@@ -42,7 +42,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 # https://catboost.ai/en/docs/concepts/loss-functions-classification
 model = CatBoostClassifier(
-    iterations=100, depth=2, learning_rate=0.25, loss_function="Logloss", verbose=True
+    iterations=200, depth=2, learning_rate=0.25, loss_function="Logloss", verbose=True
 )
 
 model.fit(X_train, y_train)

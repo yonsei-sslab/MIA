@@ -64,11 +64,11 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")  # Defin
 for _ in range(CFG.num_shadow_models):
     train_indices = np.random.choice(len(shadow_set), CFG.shadow_train_size, replace=False)
     eval_indices = np.setdiff1d(np.arange(len(shadow_set)), train_indices)
-    eval_indices = np.random.choice(eval_indices, CFG.shadow_train_size, replace=False)
+    eval_indices = np.random.choice(eval_indices, CFG.shadow_train_size // 2, replace=False)
     test_indices = np.setdiff1d(
         np.arange(len(shadow_set)), np.concatenate((train_indices, eval_indices))
     )
-    test_indices = np.random.choice(test_indices, CFG.shadow_train_size, replace=False)
+    test_indices = np.random.choice(test_indices, CFG.shadow_train_size // 2, replace=False)
 
     subset_train = torch.utils.data.Subset(shadow_set, train_indices)
     subset_eval = torch.utils.data.Subset(shadow_set, eval_indices)
