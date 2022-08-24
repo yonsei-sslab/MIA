@@ -47,7 +47,13 @@ model = CatBoostClassifier(
 
 model.fit(X_train, y_train)
 accuracy = model.score(X_test, y_test)
-print(accuracy)
+precision, recall, f1_score, _ = precision_recall_fscore_support(
+    y_test, model.predict(X_test), average="binary"
+)
+print("accuracy:", accuracy)
+print("precision:", precision)
+print("recall:", recall)
+print("f1_score:", f1_score)
 save_path = f"./attack/{model.__class__.__name__}_{accuracy}"
 # dump(model, save_path)
 model.save_model(save_path)
