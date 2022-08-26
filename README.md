@@ -2,6 +2,13 @@
 
 ### Implementation of Shokri et al(2016) [Membership Inference Attacks Against Machine Learning Models](https://arxiv.org/pdf/1610.05820.pdf)
 
+Modifications were made on shadow models' training methodology in order to prevent overfitting
+
+1. Added weight decay factor
+2. Implemented early stopping
+3. Loads & saves best model based on evaluation metrics
+4. Creates member vs non-member attack dataset based on shadow testset
+
 ### How to run
 
 1. (Optional) Customize train / inference configurations in config.yaml
