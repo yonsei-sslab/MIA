@@ -1,6 +1,7 @@
 from shadow.trainer import train
 from shadow.make_data import make_member_nonmember
 from utils.seed import seed_everything
+from utils.load_config import load_config
 import os
 import torch
 import torchvision
@@ -17,10 +18,9 @@ import yaml
 import wandb
 import importlib
 
-# Read config.yaml file
-with open("config.yaml") as infile:
-    SAVED_CFG = yaml.load(infile, Loader=yaml.FullLoader)
-    CFG = EasyDict(SAVED_CFG["CFG"])
+# load config
+CFG = load_config("CFG")
+
 
 # seed for future replication
 seed_everything(CFG.seed)

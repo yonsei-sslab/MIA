@@ -5,6 +5,7 @@ from torch import nn
 import torchvision
 import torchvision.transforms as transforms
 from utils.seed import seed_everything
+from utils.load_config import load_config
 import pandas as pd
 import numpy as np
 import yaml
@@ -23,11 +24,10 @@ import xgboost as xgb
 import lightgbm as lgb
 from catboost import CatBoostClassifier
 
-# Read config.yaml file
-with open("config.yaml") as infile:
-    SAVED_CFG = yaml.load(infile, Loader=yaml.FullLoader)
-    CFG = EasyDict(SAVED_CFG["CFG"])
-    CFG_ATTACK = EasyDict(SAVED_CFG["CFG_ATTACK"])
+
+# load config
+CFG = load_config("CFG")
+CFG_ATTACK = load_config("CFG_ATTACK")
 
 # seed for future replication
 seed_everything(CFG.seed)
