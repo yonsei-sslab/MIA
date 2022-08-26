@@ -1,5 +1,7 @@
 # config for shadow
 CFG:
+  dataset_name: CIFAR10 # CIFAR10 vs CIFAR100 selection
+  model_architecture: resnet18
   DEBUG: false
   topk_num_accessible_probs: 10 # topk match with accessible classes logits/probability classes number from the target model. usually top 5 for APIs
   # We set the learning rate to 0.001, the learning rate decay to 1e − 07, and the maximum epochs of training to 100.
@@ -11,9 +13,8 @@ CFG:
   # We vary the size of the training set for the CIFAR datasets, to measure the difference in the attack accuracy.
   # For the CIFAR-10 dataset, we choose 2,500; 5,000; 10,000; and 15,000.
   # For the CIFAR-100 dataset, we choose 4,600; 10,520; 19,920; and 29,540.
-  shadow_train_size: 4600 # number of datasets to divide CIFAR train dataset for shadow model training
+  shadow_train_size: 2500 # number of datasets to divide CIFAR train dataset for shadow model training
   seed: 42
-  num_classes: 10 # CIFAR10 vs CIFAR100 selection
   val_acc_goal: -1 # shadow model's goal accuracy working as early stop. -1 for not using early stop
   early_stop_patience: 10 # 10 epochs of patience for earlystop
   input_resolution: 32 # 32 x 32 is cifar10 and cifar100 original image resolution
@@ -21,17 +22,16 @@ CFG:
   val_batch_size: 512
   logging_steps: 1000
   save_path: ./ckpt
-  model_architecture: resnet18
   target_train_size: 7500 # fraction to divide CIFAR test dataset for target model training
   bool_pretrained: false
 # config for attack model
 
 CFG_ATTACK:
+  target_model_path: ./ckpt/target_loss_ 2.4_acc5_93.68000030517578.ckpt
   attack_dset_path: ./attack/ResNet_pretrained_False_num_shadow_128_CIFAR10.csv
+  attack_model_path: ./attack/CatBoostClassifier_0.8371392405063292
   test_size: 0.2
   train_epoch: 100
   learning_rate: 0.25
   n_estimators: 100
-  attack_model_path: ./attack/CatBoostClassifier_0.8371392405063292
-  target_model_path: ./ckpt/target_loss_ 2.4_acc5_93.68000030517578.ckpt
   roc_curve_path: ./assets/roc_cifar10.png

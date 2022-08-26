@@ -33,12 +33,13 @@ CFG_ATTACK = load_config("CFG_ATTACK")
 seed_everything(CFG.seed)
 
 # Load the CIFAR dataset
-# CIFAR train is used for shadow model train & evaluation
-# CIFAR test is used for target model train & evaluation
-if CFG.num_classes == 10:
+# CIFAR train is used for SHADOW MODEL train & evaluation whereas CIFAR test is used for TARGET MODEL train & evaluation
+if CFG.dataset_name.lower() == "cifar10":
     DSET_CLASS = torchvision.datasets.CIFAR10
-elif CFG.num_classes == 100:
+    CFG.num_classes = 10
+elif CFG.dataset_name.lower() == "cifar100":
     DSET_CLASS = torchvision.datasets.CIFAR100
+    CFG.num_classes = 100
 
 transform = transforms.Compose(
     [
