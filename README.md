@@ -16,12 +16,10 @@
 
 ### Result
 
-**MIA Attack ROC Curve for CIFAR 100**
-An example of ROC Curve plotting `TPR / FPR` according to MIA classification thresholds for CIFAR 100 dataset
-![roc_curve](./assets/roc.png)
-
 - Replicated the paper's configuration on [config.yaml](./config.yaml)
-- Yielded the result of the following
+- Below is an example of ROC Curve plotting `TPR / FPR` according to MIA classification thresholds for CIFAR 100 dataset
+
+![roc_curve](./assets/roc.png)
 
 | MIA Attack Metrics | Accuracy | Precision | Recall | F1 Score |
 | :----------------: | :------: | :-------: | :----: | :------: |
