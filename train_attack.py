@@ -63,7 +63,7 @@ print("mean tpr:", np.mean(tpr))
 # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=An%20ROC%20curve%20(receiver%20operating,False%20Positive%20Rate
 # plot and save roc curve
 plt.figure(figsize=(8, 8))
-plt.plot(fpr, tpr, label="ROC curve (area = %0.2f)" % auc(fpr, tpr))
+plt.plot(fpr, tpr, label="MIA ROC curve (area = %0.2f)" % auc(fpr, tpr))
 plt.plot([0, 1], [0, 1], "k--")
 plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.05])

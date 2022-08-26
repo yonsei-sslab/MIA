@@ -8,6 +8,29 @@ import torch
 from torch import nn
 
 
+class EarlyStopPatience(nn.Module):
+    def __init__(self, patience=10):
+        self.patience = patience
+        self.count = 0
+        self.best_score = None
+        self.bool_early_stop = False
+
+    def __call__(self, score: float):
+        if self.best_score is None:
+            self.best_score = score
+        # accumulate counting if the score is not better than the best score
+        elif score < self.best_score:
+            self.count += 1
+            if self.count >= self.patience:
+                self.bool_early_stop = True
+                print("Early stopping")
+        # renew count and best score if the maximum score is achieved
+        elif score >= self.best_score:
+            self.best_score = score
+            self.count = 0
+        return self.bool_early_stop
+
+
 def validate(val_loader, model, criterion, device):
     # Reference: https://github.com/pytorch/examples/blob/00ea159a99f5cb3f3301a9bf0baa1a5089c7e217/imagenet/main.py#L313-L353
     batch_time = AverageMeter("Time", ":6.3f", Summary.NONE)
@@ -76,6 +99,7 @@ def train(
     criterion=None,
     device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),
 ):
+    early_stop_acc1 = EarlyStopPatience(patience=CFG.early_stop_patience)
     best_valid_acc = 0
     best_valid_loss = 10
 
@@ -195,13 +219,15 @@ def train(
             best_valid_loss = valid_loss
             wandb.log({"best_valid_top5_acc": best_valid_acc})
 
-        # early stop
+        # early stop based on validation top1 accuracy patience
+        if early_stop_acc1(valid_acc1):
+            break
+
+        # early stop based on validation accuracy goal
         if CFG.val_acc_goal > 0:
             if best_valid_acc >= CFG.val_acc_goal:
                 print("Early stopping...")
                 break
-        else:
-            pass
 
     # load best model
     print("Loading best model...")

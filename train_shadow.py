@@ -146,7 +146,7 @@ for shadow_number, shadow_loader in enumerate(tqdm(list_train_loader)):
 
     df_attack_dset = pd.concat([df_attack_dset, df_member, df_non_member])
     df_attack_dset.to_csv(
-        f"./attack/{shadow_model.__class__.__name__}_pretrained_{CFG.bool_pretrained}_num_shadow_{CFG.num_shadow_models}.csv",
+        f"./attack/{shadow_model.__class__.__name__}_pretrained_{CFG.bool_pretrained}_num_shadow_{CFG.num_shadow_models}_CIFAR{CFG.num_classes}.csv",
         index=False,
     )
 
