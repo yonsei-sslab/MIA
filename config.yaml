@@ -28,6 +28,9 @@ CFG:
 CFG_ATTACK:
   attack_dset_path: ./attack/ResNet_pretrained_False_num_shadow_100.csv
   test_size: 0.2
+  train_epoch: 100
+  learning_rate: 0.25
   n_estimators: 100
   attack_model_path: ./attack/CatBoostClassifier_0.8371392405063292
   target_model_path: ./ckpt/target_loss_ 2.4_acc5_93.68000030517578.ckpt
+  roc_curve_path: ./assets/roc.png

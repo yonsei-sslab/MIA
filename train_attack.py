@@ -2,10 +2,11 @@ from utils.seed import seed_everything
 from utils.load_config import load_config
 import pandas as pd
 import numpy as np
+from matplotlib import pyplot as plt
 
 # get metric and train, test support
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import precision_recall_fscore_support, roc_curve
+from sklearn.metrics import precision_recall_fscore_support, roc_curve, auc
 
 # get classifier models
 from sklearn.ensemble import RandomForestClassifier
@@ -35,11 +36,14 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 
-# fit attack model: https://github.com/snoop2head/ml_classification_tutorial/blob/main/ML_Classification.ipynb
 # model = xgb.XGBClassifier(n_estimators=CFG_ATTACK.n_estimators, n_jobs=-1, random_state=CFG.seed)
 # model = lgb.LGBMClassifier(n_estimators=CFG_ATTACK.n_estimators, n_jobs=-1, random_state=CFG.seed)
 model = CatBoostClassifier(
-    iterations=200, depth=2, learning_rate=0.25, loss_function="Logloss", verbose=True
+    iterations=CFG_ATTACK.train_epoch,
+    depth=2,
+    learning_rate=CFG_ATTACK.learning_rate,
+    loss_function="Logloss",
+    verbose=True,
 )  # https://catboost.ai/en/docs/concepts/loss-functions-classification
 
 model.fit(X_train, y_train)
@@ -53,12 +57,24 @@ print("recall:", recall)
 print("f1_score:", f1_score)
 
 fpr, tpr, thresholds = roc_curve(y_test, model.predict_proba(X_test)[:, 1])
-print("fpr:", np.mean(fpr))
-print("tpr:", np.mean(tpr))
-print("thresholds:", thresholds)
-#
+print("mean fpr:", np.mean(fpr))
+print("mean tpr:", np.mean(tpr))
+
+# https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=An%20ROC%20curve%20(receiver%20operating,False%20Positive%20Rate
+# plot and save roc curve
+plt.figure(figsize=(10, 10))
+plt.plot(fpr, tpr, label="ROC curve (area = %0.2f)" % auc(fpr, tpr))
+plt.plot([0, 1], [0, 1], "k--")
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("ROC curve")
+plt.legend(loc="lower right")
+plt.show()
+plt.savefig(CFG_ATTACK.roc_curve_path)
+
 
 save_path = f"./attack/{model.__class__.__name__}_{accuracy}"
-# dump(model, save_path)
 model.save_model(save_path)
 
