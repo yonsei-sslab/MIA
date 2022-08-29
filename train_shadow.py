@@ -8,6 +8,7 @@ import torchvision
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.optim import Adam, AdamW
+from torch.utils.data import DataLoader, Subset
 import torchvision.transforms as transforms
 from tqdm import tqdm
 import pandas as pd
@@ -45,9 +46,7 @@ transform = transforms.Compose(
     ]
 )
 shadow_set = DSET_CLASS(root="./data", train=True, download=True, transform=transform)
-shadow_loader = torch.utils.data.DataLoader(
-    shadow_set, batch_size=CFG.train_batch_size, shuffle=True, num_workers=2
-)
+shadow_loader = DataLoader(shadow_set, batch_size=CFG.train_batch_size, shuffle=True, num_workers=2)
 
 # define dataset for attack model that shadow models will generate
 print("mapped classes to ids:", shadow_set.class_to_idx)
@@ -70,19 +69,19 @@ for _ in range(CFG.num_shadow_models):
     )
     test_indices = np.random.choice(test_indices, CFG.shadow_train_size, replace=False)
 
-    subset_train = torch.utils.data.Subset(shadow_set, train_indices)
-    subset_eval = torch.utils.data.Subset(shadow_set, eval_indices)
-    subset_test = torch.utils.data.Subset(shadow_set, test_indices)
+    subset_train = Subset(shadow_set, train_indices)
+    subset_eval = Subset(shadow_set, eval_indices)
+    subset_test = Subset(shadow_set, test_indices)
 
-    subset_train_loader = torch.utils.data.DataLoader(
+    subset_train_loader = DataLoader(
         subset_train, batch_size=CFG.train_batch_size, shuffle=True, num_workers=2
     )
 
-    subset_eval_loader = torch.utils.data.DataLoader(
+    subset_eval_loader = DataLoader(
         subset_eval, batch_size=CFG.val_batch_size, shuffle=False, num_workers=2
     )
 
-    subset_test_loader = torch.utils.data.DataLoader(
+    subset_test_loader = DataLoader(
         subset_test, batch_size=CFG.val_batch_size, shuffle=False, num_workers=2
     )
 

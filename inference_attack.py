@@ -4,6 +4,7 @@ import torch
 from torch import nn
 import torchvision
 import torchvision.transforms as transforms
+from torch.utils.data import DataLoader, Subset
 from utils.seed import seed_everything
 from utils.load_config import load_config
 import pandas as pd
@@ -59,14 +60,14 @@ columns_attack_sdet = [f"top_{index}_prob" for index in range(CFG.topk_num_acces
 list_nonmember_indices = pd.read_csv("./attack/train_indices.csv")["index"].to_list()
 list_member_indices = np.random.choice(len(testset), len(list_nonmember_indices), replace=False)
 
-subset_nonmember = torch.utils.data.Subset(trainset, list_nonmember_indices)
-subset_member = torch.utils.data.Subset(testset, list_member_indices)
+subset_nonmember = Subset(trainset, list_nonmember_indices)
+subset_member = Subset(testset, list_member_indices)
 
-subset_nonmember_loader = torch.utils.data.DataLoader(
+subset_nonmember_loader = DataLoader(
     subset_nonmember, batch_size=CFG.train_batch_size, shuffle=True, num_workers=2
 )
 
-subset_member_loader = torch.utils.data.DataLoader(
+subset_member_loader = DataLoader(
     subset_member, batch_size=CFG.train_batch_size, shuffle=True, num_workers=2
 )
 

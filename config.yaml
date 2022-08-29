@@ -1,10 +1,9 @@
 # config for shadow
 CFG:
   dataset_name: CIFAR10 # CIFAR10 vs CIFAR100 selection
-  model_architecture: resnet18
-  DEBUG: false
+  model_architecture: resnet18 # names available on torchvision.models https://pytorch.org/vision/stable/models.html#classification
   topk_num_accessible_probs: 10 # topk match with accessible classes logits/probability classes number from the target model. usually top 5 for APIs
-  # We set the learning rate to 0.001, the learning rate decay to 1e − 07, and the maximum epochs of training to 100.
+  # "We set the learning rate to 0.001, the learning rate decay to 1e − 07, and the maximum epochs of training to 100."
   num_epochs: 100 # number of shadow model train epochs
   learning_rate: 0.001
   learning_rate_decay: 0.0000001 # NOT IMPLEMENTED ON THE REPO

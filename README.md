@@ -24,14 +24,15 @@ Modifications were made on shadow models' training methodology in order to preve
 ### Result
 
 - Replicated the paper's configuration on [config.yaml](./config.yaml)
-- Below is an example of ROC Curve plotting `TPR / FPR` according to MIA classification thresholds for CIFAR 100 dataset
+- ROC Curve is plotting `TPR / FPR` according to MIA classification thresholds
 
 | MIA Attack Metrics | Accuracy | Precision | Recall | F1 Score |
 | :----------------: | :------: | :-------: | :----: | :------: |
 |      CIFAR10       |  0.8376  |  0.8087   | 0.8834 |  0.8444  |
 |      CIFAR100      |  0.9746  |  0.9627   | 0.9875 |  0.9749  |
 
-![roc_curve](./assets/roc_cifar100.png)
+![roc_curve CIFAR10](./assets/roc_cifar10.png)
+![roc_curve CIFAR100](./assets/roc_cifar100.png)
 
 ### Paper's Methodology in Diagrams
 
