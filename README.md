@@ -31,8 +31,9 @@ Modifications were made on shadow models' training methodology in order to preve
 |      CIFAR10       |  0.8376  |  0.8087   | 0.8834 |  0.8444  |
 |      CIFAR100      |  0.9746  |  0.9627   | 0.9875 |  0.9749  |
 
-![roc_curve CIFAR10](./assets/roc_cifar10.png)
-![roc_curve CIFAR100](./assets/roc_cifar100.png)
+|             MIA ROC Curve CIFAR10              |              MIA ROC Curve CIFAR100              |
+| :--------------------------------------------: | :----------------------------------------------: |
+| ![roc_curve CIFAR10](./assets/roc_cifar10.png) | ![roc_curve CIFAR100](./assets/roc_cifar100.png) |
 
 ### Paper's Methodology in Diagrams
 
