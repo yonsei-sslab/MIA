@@ -28,7 +28,7 @@ Modifications were made on shadow models' training methodology in order to preve
 
 | MIA Attack Metrics | Accuracy | Precision | Recall | F1 Score |
 | :----------------: | :------: | :-------: | :----: | :------: |
-|      CIFAR10       |  0.8376  |  0.8087   | 0.8834 |  0.8444  |
+|      CIFAR10       |  0.7761  |  0.7593   | 0.8071 |  0.7825  |
 |      CIFAR100      |  0.9746  |  0.9627   | 0.9875 |  0.9749  |
 
 |             MIA ROC Curve CIFAR10              |              MIA ROC Curve CIFAR100              |

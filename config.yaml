@@ -30,7 +30,7 @@ CFG_ATTACK:
   attack_dset_path: ./attack/ResNet_pretrained_False_num_shadow_128_CIFAR10.csv
   attack_model_path: ./attack/CatBoostClassifier_0.8371392405063292
   test_size: 0.2
-  train_epoch: 100
+  train_epoch: 200
   learning_rate: 0.25
   n_estimators: 100
   roc_curve_path: ./assets/roc_cifar10.png
